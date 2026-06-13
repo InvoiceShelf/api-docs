@@ -5,7 +5,7 @@ name: Build & Publish API Docs
 # deployed digest via its own update-images workflow on the image-pushed event.
 on:
   push:
-    branches: [master, main]
+    branches: [main]
   workflow_dispatch:
   # Fired by the InvoiceShelf app repo after it publishes a fresh spec.
   repository_dispatch:
