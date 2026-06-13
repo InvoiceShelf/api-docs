@@ -1,0 +1,9 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "InvoiceShelf API",
+    "description": "Placeholder spec. Replaced at build time by scripts/fetch-specs.sh, which pulls the generated openapi.json from the InvoiceShelf '3.x' branch.",
+    "version": "0.0.0-placeholder"
+  },
+  "paths": {}
+}
