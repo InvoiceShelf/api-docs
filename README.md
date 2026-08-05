@@ -4,11 +4,12 @@ The static [Swagger UI](https://github.com/swagger-api/swagger-ui) site served a
 **[api-docs.invoiceshelf.com](https://api-docs.invoiceshelf.com)** — the public REST
 API reference for the InvoiceShelf **v3** API.
 
-It is a frozen, self-contained artifact: a pinned `swagger-ui-dist` plus a baked-in
-`openapi.json`, served by nginx. The OpenAPI spec itself is generated in the app repo
-([InvoiceShelf/InvoiceShelf](https://github.com/InvoiceShelf/InvoiceShelf), `3.x`
-branch) with [Scramble](https://scramble.dedoc.co/) — no annotations, inferred from the
-app's FormRequests and API Resources.
+It is a self-contained static site: a pinned `swagger-ui-dist` plus a committed
+`openapi.json`, served by nginx. The committed spec provides a working checked-out site and
+a fallback if a refresh cannot be fetched. Before every image build, the build workflow
+refreshes it from the app repo ([InvoiceShelf/InvoiceShelf](https://github.com/InvoiceShelf/InvoiceShelf),
+`3.x` branch). The app generates that spec with [Scramble](https://scramble.dedoc.co/) —
+no annotations, inferred from the app's Form Requests and API Resources.
 
 ## How it fits together
 
@@ -34,7 +35,7 @@ k8s-production-cluster  ──▶  update-images.yaml bumps the digest in
 | File | Purpose |
 |---|---|
 | `index.html` | Swagger UI shell, loads `openapi.json` |
-| `openapi.json` | The spec. Placeholder in git; overwritten at build time by `fetch-specs.sh` |
+| `openapi.json` | Last committed generated v3 spec; refreshed in the build workspace by `fetch-specs.sh` before the image is built |
 | `Dockerfile` | Pinned `swagger-ui-dist` + spec → nginx |
 | `default.conf` | nginx config (gzip, cache headers) |
 | `scripts/fetch-specs.sh` | Pulls the latest `openapi.json` from the app repo's `3.x` branch |
@@ -43,7 +44,7 @@ k8s-production-cluster  ──▶  update-images.yaml bumps the digest in
 ## Local preview
 
 ```bash
-bash scripts/fetch-specs.sh                 # pull the latest spec (optional)
+bash scripts/fetch-specs.sh                 # refresh the working-tree spec (optional)
 docker build -t api-docs .
 docker run --rm -p 8080:80 api-docs         # open http://localhost:8080
 ```
@@ -56,6 +57,6 @@ docker run --rm -p 8080:80 api-docs         # open http://localhost:8080
 
 ## Adding the v2 API later
 
-The site is intentionally v3-only. To also document the v2 (`master`) API, Swagger UI's
+The site is intentionally v3-only. To also document the v2 (`2.x`) API, Swagger UI's
 `urls` option renders a version dropdown — fetch both specs, name them `openapi-v3.json`
 / `openapi-v2.json`, and switch `index.html` from `url:` to `urls: [...]`.
